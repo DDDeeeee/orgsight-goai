@@ -1,6 +1,6 @@
 -- GOAI Skill 结果、冻结输入与可读投影的持久化契约。
 -- 此 migration 只定义未来运行的结果存储，不将当前预制模型或关系伪造为 Skill 执行结果。
--- 所有表仅面向 profilemesh_goai_demo；不包含 AgentTeams runtime 状态。
+-- 所有表仅面向 orgsight_demo；不包含 AgentTeams runtime 状态。
 
 BEGIN;
 

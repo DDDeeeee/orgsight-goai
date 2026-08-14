@@ -1,9 +1,9 @@
 apiVersion: agentteams.io/v1beta1
 kind: Manager
 metadata:
-  name: profilemesh-manager
+  name: orgsight-manager
 spec:
   model: deepseek-v4-flash
   runtime: copaw # QwenPaw
-  package: packages/profilemesh-manager.zip
+  package: packages/orgsight-manager.zip
   state: Stopped

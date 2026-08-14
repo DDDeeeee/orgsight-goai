@@ -7,7 +7,7 @@ spec:
   runtime: copaw # QwenPaw
   package: packages/governance-deviation-worker.zip
   mcpServers:
-    - name: profilemesh-goai
+    - name: orgsight
       url: http://host.docker.internal:8787/mcp
       transport: http
   state: Stopped

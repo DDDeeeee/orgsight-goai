@@ -1,7 +1,7 @@
 import pytest
 
-from profilemesh_goai import web_app
-from profilemesh_goai.web_app import (
+from orgsight import web_app
+from orgsight.web_app import (
 	AgentTeamsCasesError,
 	MatrixError,
 	agentteams_case,
@@ -12,17 +12,13 @@ from profilemesh_goai.web_app import (
 )
 
 
-MANAGER = "@manager:matrix-local.agentteams.io:28080"
-
-
 def test_web_client_requires_its_own_human_credentials(monkeypatch):
     monkeypatch.setattr(web_app, "load_local_environment", lambda: None)
-    monkeypatch.delenv("PROFILEMESH_WEB_MATRIX_USER", raising=False)
-    monkeypatch.delenv("PROFILEMESH_WEB_MATRIX_PASSWORD", raising=False)
+    monkeypatch.delenv("ORGSIGHT_WEB_MATRIX_USER", raising=False)
+    monkeypatch.delenv("ORGSIGHT_WEB_MATRIX_PASSWORD", raising=False)
     monkeypatch.setenv("AGENTTEAMS_MATRIX_URL", "http://127.0.0.1:28080")
-    monkeypatch.setenv("PROFILEMESH_MANAGER_MATRIX_ID", MANAGER)
 
-    with pytest.raises(MatrixError, match="PROFILEMESH_WEB_MATRIX_USER.*PROFILEMESH_WEB_MATRIX_PASSWORD"):
+    with pytest.raises(MatrixError, match="ORGSIGHT_WEB_MATRIX_USER.*ORGSIGHT_WEB_MATRIX_PASSWORD"):
         configured_matrix_client()
 
 
@@ -91,7 +87,6 @@ def test_case_detail_rejects_path_traversal_before_any_request():
 
 def test_web_page_contains_no_hardcoded_case_data():
     assert "OrgSight" in web_app.INDEX_HTML
-    assert "ProfileMesh" not in web_app.INDEX_HTML
     assert "Team Leader · AgentTeams" not in web_app.INDEX_HTML
     assert "管理侧工作台" not in web_app.INDEX_HTML
     assert "OrgSight 管理侧" not in web_app.INDEX_HTML

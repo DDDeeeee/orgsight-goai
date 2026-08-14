@@ -45,7 +45,7 @@ fixtures/demo-office/     合成组织、人物和关系数据
 migrations/               PostgreSQL 数据库结构
 scripts/                  数据导入与模型文档生成脚本
 skills/                   OrgSight 领域 Skills 与参考资料
-src/profilemesh_goai/     MCP、授权、数据访问和管理页面
+src/orgsight/             MCP、授权、数据访问和管理页面
 tests/                    自动化测试
 ```
 
@@ -86,11 +86,11 @@ cp .env.example .env
 初始化独立 Demo 数据库：
 
 ```bash
-createdb profilemesh_goai_demo
-psql postgresql://localhost/profilemesh_goai_demo --set ON_ERROR_STOP=1 --file migrations/versions/0001_demo_organization.sql
-psql postgresql://localhost/profilemesh_goai_demo --set ON_ERROR_STOP=1 --file migrations/versions/0002_skill_result_storage.sql
-psql postgresql://localhost/profilemesh_goai_demo --set ON_ERROR_STOP=1 --file migrations/versions/0003_mcp_task_authorization.sql
-psql postgresql://localhost/profilemesh_goai_demo --set ON_ERROR_STOP=1 --file migrations/versions/0004_rename_task_objective.sql
+createdb orgsight_demo
+psql postgresql://localhost/orgsight_demo --set ON_ERROR_STOP=1 --file migrations/versions/0001_demo_organization.sql
+psql postgresql://localhost/orgsight_demo --set ON_ERROR_STOP=1 --file migrations/versions/0002_skill_result_storage.sql
+psql postgresql://localhost/orgsight_demo --set ON_ERROR_STOP=1 --file migrations/versions/0003_mcp_task_authorization.sql
+psql postgresql://localhost/orgsight_demo --set ON_ERROR_STOP=1 --file migrations/versions/0004_rename_task_objective.sql
 .venv/bin/python scripts/seed_demo_data.py
 .venv/bin/python scripts/generate_model_documents.py
 ```
@@ -98,7 +98,7 @@ psql postgresql://localhost/profilemesh_goai_demo --set ON_ERROR_STOP=1 --file m
 启动只读 MCP 服务：
 
 ```bash
-.venv/bin/profilemesh-goai-mcp
+.venv/bin/orgsight-mcp
 ```
 
 默认监听：
@@ -112,7 +112,7 @@ AgentTeams Worker 在 Docker 内可通过配置的宿主机地址访问该服务
 启动管理页面：
 
 ```bash
-.venv/bin/profilemesh-goai-web
+.venv/bin/orgsight-web
 ```
 
 浏览器访问：

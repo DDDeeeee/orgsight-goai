@@ -1,0 +1,11 @@
+apiVersion: agentteams.io/v1beta1
+kind: Human
+metadata:
+  name: orgsight-web
+spec:
+  displayName: OrgSight
+  permissionLevel: 2
+  accessibleTeams:
+    - talent-role-insight
+  accessibleWorkers: []
+  note: OrgSight analysis request web entry

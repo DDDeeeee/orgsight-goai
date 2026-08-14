@@ -1,6 +1,6 @@
 # GOAI AgentSpec 源文件
 
-本目录保存 ProfileMesh GOAI 的 Agent 角色源文件，以及未来生成 AgentTeams 配置时所需的映射信息。它不是 AgentTeams runtime 源码，也不是可直接 `apply` 的部署包。
+本目录保存 OrgSight 的 Agent 角色源文件，以及未来生成 AgentTeams 配置时所需的映射信息。它不是 AgentTeams runtime 源码，也不是可直接 `apply` 的部署包。
 
 每个 `<agent-name>/AGENT.md` 定义一个未来 Agent 的：
 

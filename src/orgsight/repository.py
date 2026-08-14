@@ -32,7 +32,7 @@ class PostgresRepository:
 
     def __init__(self, database_url: str | None = None) -> None:
         self.database_url = database_url or os.environ.get(
-            "PROFILEMESH_GOAI_DATABASE_URL", "postgresql://localhost/profilemesh_goai_demo"
+            "ORGSIGHT_DATABASE_URL", "postgresql://localhost/orgsight_demo"
         )
 
     @contextmanager

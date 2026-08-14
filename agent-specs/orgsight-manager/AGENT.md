@@ -1,5 +1,5 @@
 ---
-name: profilemesh-manager
+name: orgsight-manager
 kind: manager
 status: design_only
 agentteams_builtin_skills: [team-management, project-management, task-coordination, task-management]

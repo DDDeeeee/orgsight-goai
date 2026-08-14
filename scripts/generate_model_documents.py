@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DATABASE_URL = "postgresql://localhost/profilemesh_goai_demo"
+DEFAULT_DATABASE_URL = "postgresql://localhost/orgsight_demo"
 
 QUERY = """
 SELECT md.model_document_id, md.relative_path, p.name, p.formal_title, u.name AS unit_name,

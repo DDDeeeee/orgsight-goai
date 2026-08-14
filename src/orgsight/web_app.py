@@ -107,10 +107,6 @@ def leader_matrix_id(leader: str) -> str:
     load_local_environment()
     domain = os.environ.get("AGENTTEAMS_MATRIX_DOMAIN", "").strip()
     if not domain:
-        manager_id = os.environ.get("PROFILEMESH_MANAGER_MATRIX_ID", "").strip()
-        if ":" in manager_id:
-            domain = manager_id.split(":", 1)[1]
-    if not domain:
         raise MatrixError("未配置 AgentTeams Matrix 域名")
     return f"@{leader}:{domain}"
 
@@ -220,15 +216,15 @@ def configured_matrix_client() -> MatrixClient:
     load_local_environment()
     values = {
         "AGENTTEAMS_MATRIX_URL": os.environ.get("AGENTTEAMS_MATRIX_URL", "").strip(),
-        "PROFILEMESH_WEB_MATRIX_USER": os.environ.get("PROFILEMESH_WEB_MATRIX_USER", "").strip(),
-        "PROFILEMESH_WEB_MATRIX_PASSWORD": os.environ.get("PROFILEMESH_WEB_MATRIX_PASSWORD", "").strip(),
+        "ORGSIGHT_WEB_MATRIX_USER": os.environ.get("ORGSIGHT_WEB_MATRIX_USER", "").strip(),
+        "ORGSIGHT_WEB_MATRIX_PASSWORD": os.environ.get("ORGSIGHT_WEB_MATRIX_PASSWORD", "").strip(),
     }
     missing = [name for name, value in values.items() if not value]
     if missing:
         raise MatrixError("网页尚未配置：请在 .env 填写 " + "、".join(missing))
     return MatrixClient(
-        values["AGENTTEAMS_MATRIX_URL"], values["PROFILEMESH_WEB_MATRIX_USER"],
-        values["PROFILEMESH_WEB_MATRIX_PASSWORD"],
+        values["AGENTTEAMS_MATRIX_URL"], values["ORGSIGHT_WEB_MATRIX_USER"],
+        values["ORGSIGHT_WEB_MATRIX_PASSWORD"],
     )
 
 
@@ -267,7 +263,7 @@ def execute_request(request_id: str) -> None:
         client.login()
         room_id = client.create_source_room(request_id, leader_id)
         STORE.update(request_id, status="waiting_for_leader", room_id=room_id)
-        client.send_message(room_id, f"{leader_id} {item.prompt}", f"profilemesh-{request_id}", leader_id)
+        client.send_message(room_id, f"{leader_id} {item.prompt}", f"orgsight-{request_id}", leader_id)
         STORE.update(request_id, status="processing")
         deadline = time.monotonic() + RESULT_TIMEOUT_SECONDS
         while time.monotonic() < deadline:
@@ -410,8 +406,8 @@ async def app(scope: dict[str, Any], receive: Any, send: Any) -> None:
 
 def main() -> None:
     load_local_environment()
-    host = os.environ.get("PROFILEMESH_WEB_HOST", "127.0.0.1")
-    port = int(os.environ.get("PROFILEMESH_WEB_PORT", "8800"))
+    host = os.environ.get("ORGSIGHT_WEB_HOST", "127.0.0.1")
+    port = int(os.environ.get("ORGSIGHT_WEB_PORT", "8800"))
     uvicorn.run(app, host=host, port=port)
 
 

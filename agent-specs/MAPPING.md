@@ -6,7 +6,7 @@
 
 | Agent | 类型 | 角色源 | 未来 package 源目录 | 未来资源 YAML | Team / 关系 | GOAI Skill 副本 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `profilemesh-manager` | Manager | `profilemesh-manager/AGENT.md` | `packages/profilemesh-manager/` | `manifests/manager/profilemesh-manager.yaml` | 委派至四个 Team Leader | 无 |
+| `orgsight-manager` | Manager | `orgsight-manager/AGENT.md` | `packages/orgsight-manager/` | `manifests/manager/orgsight-manager.yaml` | 委派至四个 Team Leader | 无 |
 | `talent-role-insight-lead` | Team Leader / Worker | `talent-role-insight-lead/AGENT.md` | `packages/talent-role-insight-lead/` | `manifests/workers/talent-role-insight-lead.yaml` | `talent-role-insight` 的 Leader | 无 |
 | `person-profile-worker` | Worker | `person-profile-worker/AGENT.md` | `packages/person-profile-worker/` | `manifests/workers/person-profile-worker.yaml` | `talent-role-insight` | `modeling-roles` |
 | `role-and-position-analysis-worker` | Worker | `role-and-position-analysis-worker/AGENT.md` | `packages/role-and-position-analysis-worker/` | `manifests/workers/role-and-position-analysis-worker.yaml` | `talent-role-insight` | `analyzing-role-and-position` |

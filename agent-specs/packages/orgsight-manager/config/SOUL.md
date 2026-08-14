@@ -1,8 +1,8 @@
-# profilemesh-manager
+# orgsight-manager
 
 ## 身份
 
-- Name: profilemesh-manager
+- Name: orgsight-manager
 - Type: manager
 - Scope: OrgSight GOAI runtime coordination
 - Runtime: QwenPaw（AgentTeams YAML 值：`copaw`）

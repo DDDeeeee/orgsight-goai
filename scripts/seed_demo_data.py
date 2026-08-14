@@ -13,7 +13,7 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_DIRECTORY = REPOSITORY_ROOT / "fixtures" / "demo-office"
-DEFAULT_DATABASE_URL = "postgresql://localhost/profilemesh_goai_demo"
+DEFAULT_DATABASE_URL = "postgresql://localhost/orgsight_demo"
 
 
 def sql_text(value: str | None) -> str:

@@ -1,6 +1,6 @@
 # 静态 Agent 清单；不含模型、镜像、MCP 地址、凭证或可执行部署配置。
 manager:
-  - profilemesh-manager
+  - orgsight-manager
 teams:
   - name: talent-role-insight
     display_name: 人才与角色洞察

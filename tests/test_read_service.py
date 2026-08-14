@@ -1,10 +1,10 @@
 from datetime import date
 import hashlib
 
-from profilemesh_goai.authorization import TaskGrant, token_sha256
-from profilemesh_goai.grant_service import GrantRegistration, TaskGrantRegistrationService
-from profilemesh_goai.read_service import GoaiReadService
-from profilemesh_goai.repository import ModelDocumentUnavailableError, NotFoundError
+from orgsight.authorization import TaskGrant, token_sha256
+from orgsight.grant_service import GrantRegistration, TaskGrantRegistrationService
+from orgsight.read_service import GoaiReadService
+from orgsight.repository import ModelDocumentUnavailableError, NotFoundError
 
 
 class FakeRepository:

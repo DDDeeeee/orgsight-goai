@@ -1,9 +1,9 @@
-# ProfileMesh GOAI Skills
+# OrgSight Skills
 
 此目录是 GOAI 领域 Skill 的唯一源文件位置。每个子目录都可独立作为 OpenClaw/AgentTeams Worker 工作区中的 `skills/<skill-name>/` 使用。
 
 ```text
-profilemesh_GOAI/skills/<skill-name>/
+orgsight-goai/skills/<skill-name>/
   SKILL.md
   references/
 ```

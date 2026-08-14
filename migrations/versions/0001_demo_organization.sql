@@ -1,4 +1,4 @@
--- ProfileMesh GOAI 的首个组织记忆 PostgreSQL schema。
+-- OrgSight 的首个组织记忆 PostgreSQL schema。
 -- 本 schema 承载组织、模型、关系和项目快照；不包含 AgentTeams runtime 数据。
 
 CREATE TABLE IF NOT EXISTS schema_migrations (

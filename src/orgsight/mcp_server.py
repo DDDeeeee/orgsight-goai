@@ -19,7 +19,7 @@ from .repository import PostgresRepository
 from .grant_service import GrantRegistration, TaskGrantRegistrationService, GrantRegistrationError
 
 
-_bearer_token: ContextVar[str | None] = ContextVar("profilemesh_goai_bearer_token", default=None)
+_bearer_token: ContextVar[str | None] = ContextVar("orgsight_bearer_token", default=None)
 AsgiApp = Callable[[dict[str, Any], Callable[[], Awaitable[dict[str, Any]]], Callable[[dict[str, Any]], Awaitable[None]]], Awaitable[None]]
 NonEmptyText = Annotated[str, Field(min_length=1)]
 SnapshotDate = Annotated[str, Field(pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")]
@@ -61,12 +61,12 @@ def create_mcp(service: GoaiReadService | None = None) -> FastMCP:
 
     load_local_environment()
     read_service = service or GoaiReadService(PostgresRepository())
-    host = os.environ.get("PROFILEMESH_GOAI_MCP_HOST", "127.0.0.1")
-    port = int(os.environ.get("PROFILEMESH_GOAI_MCP_PORT", "8787"))
+    host = os.environ.get("ORGSIGHT_MCP_HOST", "127.0.0.1")
+    port = int(os.environ.get("ORGSIGHT_MCP_PORT", "8787"))
     local_hosts = [f"127.0.0.1:{port}", f"localhost:{port}", f"[::1]:{port}"]
     local_origins = [f"http://{value}" for value in local_hosts]
     mcp = FastMCP(
-        "profilemesh-goai",
+        "orgsight",
         instructions=(
             "OrgSight GOAI 的任务授权只读工具。每次调用必须带 task_id、"
             "organization_id 和 snapshot_date；服务端从 Bearer 凭证识别 Worker。"
@@ -284,8 +284,8 @@ def create_http_app(service: GoaiReadService | None = None,
 
 def main() -> None:
     load_local_environment()
-    host = os.environ.get("PROFILEMESH_GOAI_MCP_HOST", "127.0.0.1")
-    port = int(os.environ.get("PROFILEMESH_GOAI_MCP_PORT", "8787"))
+    host = os.environ.get("ORGSIGHT_MCP_HOST", "127.0.0.1")
+    port = int(os.environ.get("ORGSIGHT_MCP_PORT", "8787"))
     uvicorn.run(create_http_app(), host=host, port=port)
 
 

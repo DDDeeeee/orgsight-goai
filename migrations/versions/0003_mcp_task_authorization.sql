@@ -1,5 +1,5 @@
 -- GOAI MCP 只读服务的 Worker 身份映射与 Task 授权范围。
--- 该表属于 ProfileMesh GOAI；不保存 AgentTeams 的 Task/Room runtime 数据。
+-- 该表属于 OrgSight；不保存 AgentTeams 的 Task/Room runtime 数据。
 
 BEGIN;
 

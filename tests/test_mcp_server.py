@@ -1,10 +1,10 @@
 from starlette.testclient import TestClient
 
-from profilemesh_goai import mcp_server
-from profilemesh_goai.authorization import TaskGrant
-from profilemesh_goai.grant_service import TaskGrantRegistrationService
-from profilemesh_goai.mcp_server import create_http_app, create_mcp
-from profilemesh_goai.read_service import GoaiReadService
+from orgsight import mcp_server
+from orgsight.authorization import TaskGrant
+from orgsight.grant_service import TaskGrantRegistrationService
+from orgsight.mcp_server import create_http_app, create_mcp
+from orgsight.read_service import GoaiReadService
 
 from test_read_service import FakeRepository
 
@@ -25,7 +25,7 @@ class GrantServiceStub:
 
     def authorize_delegate(self, bearer_token):
         if bearer_token != "leader-token":
-            from profilemesh_goai.grant_service import GrantRegistrationError
+            from orgsight.grant_service import GrantRegistrationError
             raise GrantRegistrationError("调用身份无权登记 GOAI Task 授权")
 
 
@@ -130,8 +130,7 @@ def test_unconfigured_port_remains_blocked_by_transport_security():
     assert response.status_code == 421
 
 
-def test_internal_grant_route_rejects_missing_or_invalid_controller_token(monkeypatch):
-    monkeypatch.setenv("PROFILEMESH_GOAI_GRANT_TOKEN", "test-controller-token")
+def test_internal_grant_route_rejects_missing_or_invalid_controller_token():
     app = create_http_app(GoaiReadService(FakeRepository()), GrantServiceStub())
     payload = {"taskId": "task-001"}
     with TestClient(app, base_url="http://host.docker.internal:8787") as client:
@@ -139,8 +138,7 @@ def test_internal_grant_route_rejects_missing_or_invalid_controller_token(monkey
         assert client.post("/internal/task-grants", json=payload, headers={"authorization": "Bearer wrong"}).status_code == 401
 
 
-def test_internal_grant_route_registers_only_structured_template(monkeypatch):
-    monkeypatch.delenv("PROFILEMESH_GOAI_GRANT_TOKEN", raising=False)
+def test_internal_grant_route_registers_only_structured_template():
     stub = GrantServiceStub()
     payload = {
         "taskId": "task-001", "workerId": "person-profile-worker",
@@ -155,8 +153,7 @@ def test_internal_grant_route_registers_only_structured_template(monkeypatch):
     assert stub.payload.task_id == "task-001"
 
 
-def test_internal_grant_route_rejects_worker_identity(monkeypatch):
-    monkeypatch.delenv("PROFILEMESH_GOAI_GRANT_TOKEN", raising=False)
+def test_internal_grant_route_rejects_worker_identity():
     with TestClient(create_http_app(GoaiReadService(FakeRepository()), GrantServiceStub()), base_url="http://host.docker.internal:8787") as client:
         response = client.post("/internal/task-grants", json={}, headers={"authorization": "Bearer worker-token"})
     assert response.status_code == 401
@@ -166,8 +163,8 @@ def test_main_loads_local_environment_before_selecting_uvicorn_address(monkeypat
     captured = {}
 
     def fake_load_environment():
-        monkeypatch.setenv("PROFILEMESH_GOAI_MCP_HOST", "127.0.0.1")
-        monkeypatch.setenv("PROFILEMESH_GOAI_MCP_PORT", "9999")
+        monkeypatch.setenv("ORGSIGHT_MCP_HOST", "127.0.0.1")
+        monkeypatch.setenv("ORGSIGHT_MCP_PORT", "9999")
 
     monkeypatch.setattr(mcp_server, "load_local_environment", fake_load_environment)
     monkeypatch.setattr(mcp_server, "create_http_app", lambda: "app")

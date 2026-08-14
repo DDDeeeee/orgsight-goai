@@ -13,7 +13,7 @@ import sys
 
 import psycopg
 
-from profilemesh_goai.authorization import token_sha256
+from orgsight.authorization import token_sha256
 
 
 ALLOWED_WORKER_IDS = (
@@ -34,7 +34,7 @@ def main() -> int:
     token = sys.stdin.read().strip()
     if not token:
         parser.error("通过 stdin 提供 AgentTeams Gateway 凭证")
-    database_url = os.environ.get("PROFILEMESH_GOAI_DATABASE_URL", "postgresql://localhost/profilemesh_goai_demo")
+    database_url = os.environ.get("ORGSIGHT_DATABASE_URL", "postgresql://localhost/orgsight_demo")
     with psycopg.connect(database_url) as connection, connection.cursor() as cursor:
         cursor.execute(
             """INSERT INTO mcp_worker_credentials

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "profilemesh-goai"
+name = "orgsight-goai"
 version = "0.1.0"
 description = "OrgSight GOAI local MCP read service"
 requires-python = ">=3.11"
@@ -18,8 +18,8 @@ dependencies = [
 dev = ["pytest>=8,<9"]
 
 [project.scripts]
-profilemesh-goai-mcp = "profilemesh_goai.mcp_server:main"
-profilemesh-goai-web = "profilemesh_goai.web_app:main"
+orgsight-mcp = "orgsight.mcp_server:main"
+orgsight-web = "orgsight.web_app:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/profilemesh_goai"]
+packages = ["src/orgsight"]
