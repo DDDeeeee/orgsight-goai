@@ -1,8 +1,10 @@
 # OrgSight
 
-OrgSight 是面向管理者的多 Agent 组织洞察 Demo，基于合成组织数据回答人员岗位适配、协作优势和组织风险等问题。项目参加 GOAI 世界人工智能开源大赛 Agent Infra 赛道。
+#### 多 Agent 组织分析洞察系统
 
-用户在管理页面输入自然语言问题并选择分析团队后，请求会直接进入对应的 AgentTeams Team Leader。Leader 负责创建任务、委派专业 Worker 和验收结果；Worker 通过只读 MCP 工具访问授权范围内的组织数据，最终生成结构化 Markdown 分析报告。
+OrgSight 面向组织管理者，解决团队扩张时组织复杂度上升引入的管理难题。OrgSight 构建基于组织上下文的版本化组织快照，并基于 AgentTeams 构建多智能体分析框架。管理者只需将组织分析任务交给 Manager 或对应的团队 Leader，由 Leader 拆解任务、委派专业 Worker，在授权范围内查看组织、人员与协作数据，最终生成包含结论、依据、风险、信息缺口和置信度的结构化报告或决策建议。管理者或员工也可与 OrgSight 进行日常交流，OrgSight 会主动沉淀有价值的信息作为建模依据或组织上下文。
+
+该项目参加 GOAI Agent Infra 赛道（目前仅为 Demo）。
 
 ## 已验证能力
 
@@ -20,18 +22,30 @@ OrgSight 是面向管理者的多 Agent 组织洞察 Demo，基于合成组织�
 
 岗位分析报告包含分析范围、结论摘要、关键判断、详细分析、协作影响、风险与成立条件、依据、信息缺口和置信度。
 
-仓库中还包含协作治理、业务运营和管理决策模拟等团队的 Agent 与 Skill 设计骨架。这些扩展团队尚未完成端到端验证，不属于当前可运行 Demo 的验收范围。
+仓库中还包含协作治理、业务运营和管理决策模拟等团队的 Agent 与 Skills 设计骨架。这些扩展团队尚未完成端到端验证。
+
+## 测试样例：方宁销售代表岗位适配分析
+
+### 输入
+
+> 请评估方宁是否适合继续担任销售代表，重点分析她的岗位适配情况、协作优势和主要风险。
+
+### 输出
+
+网页案例展示：
+
+![方宁销售代表岗位适配分析结果](examples/fangning-sales-fit/demo_result.png)
+
+Worker 提交并由页面读取的完整结果：[查看 result.md](examples/fangning-sales-fit/result.md)。
 
 ## 演示数据
 
-当前 Demo 使用完全合成的组织基线：
+当前 Demo 使用的模拟组织基线：
 
 - 22 名合成人员；
 - 6 个正式组织单元；
 - 正式岗位和汇报关系；
-- 人物事实档案与人物职业模型；
-- 无方向协作关系快照；
-- 不包含真实企业数据、真实员工信息或生产配置。
+- 人物事实档案与人物职业模型。
 
 结构化 fixture 位于 `fixtures/demo-office/`。人物模型通过初始化脚本写入 PostgreSQL，并生成可读的 Markdown 文档至 `data/model-documents/`。
 
@@ -51,12 +65,10 @@ tests/                    自动化测试
 
 ## 与 AgentTeams 的关系
 
-OrgSight 与 AgentTeams 是两个独立仓库：
-
-- 本仓库负责业务数据、Agent/Skill 定义、只读 MCP、授权逻辑和展示页面；
+- 本仓库负责业务数据、Agent/Skills 定义、只读 MCP、授权逻辑和展示页面；
 - [AgentTeams](https://github.com/DDDeeeee/AgentTeams) fork 负责 Manager、Team Leader、Worker、Task、Room、Matrix 通信和运行生命周期。
 
-本仓库不复制或嵌入 AgentTeams 源码。运行完整 Demo 时，需要单独部署对应版本的 AgentTeams fork，并安装 `agent-specs/packages/` 中的 Agent package。
+运行完整 Demo 时，需要单独部署对应版本的 AgentTeams，并安装 `agent-specs/packages/` 中的 Agent package。
 
 ## 环境要求
 
@@ -80,8 +92,6 @@ python3 -m venv .venv
 ```bash
 cp .env.example .env
 ```
-
-`.env` 只用于本地运行，已被 Git 忽略。请勿将 API Key、数据库密码、Matrix 密码或其他运行凭证提交到仓库。
 
 初始化独立 Demo 数据库：
 
@@ -121,18 +131,8 @@ AgentTeams Worker 在 Docker 内可通过配置的宿主机地址访问该服务
 http://127.0.0.1:8800
 ```
 
-管理页面不会内置案例数据。历史案例、任务结果和 Markdown 报告均从 AgentTeams 的已完成任务接口读取。
-
 ## 测试
 
 ```bash
 .venv/bin/python -m pytest -q
 ```
-
-## 数据与安全边界
-
-- 所有演示人物和组织数据均为合成数据；
-- MCP 按 Task Grant 限制 Worker 可读取的人员、组织范围和工具；
-- Manager、Leader 和 Worker 的运行凭证不写入 Agent package 或任务文本；
-- PostgreSQL、MCP 和 AgentTeams Controller 不应直接暴露到公网；
-- 对外展示时只公开管理页面，并建议增加身份验证和访问频率限制。
