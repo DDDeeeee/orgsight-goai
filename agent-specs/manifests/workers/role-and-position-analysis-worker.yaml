@@ -1,0 +1,14 @@
+apiVersion: agentteams.io/v1beta1
+kind: Worker
+metadata:
+  name: role-and-position-analysis-worker
+spec:
+  model: deepseek-v4-flash
+  runtime: qwenpaw
+  package: oss://agentteams-config/packages/role-and-position-analysis-worker-06d896b6abe2f4e2.zip
+  mcpServers:
+    - name: profilemesh-goai
+      url: http://host.docker.internal:8787/mcp
+      transport: http
+  # 此 Worker 已进入最小岗位分析 demo 的运行集；其他未接入角色仍保持 Stopped。
+  state: Running

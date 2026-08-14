@@ -1,0 +1,14 @@
+apiVersion: agentteams.io/v1beta1
+kind: Worker
+metadata:
+  name: team-simulation-worker
+spec:
+  model: deepseek-v4-flash
+  runtime: copaw # QwenPaw
+  package: packages/team-simulation-worker.zip
+  # 当前无场景输入，保持 Stopped；未来只可按 Task Grant 读取冻结的模型和关系。
+  mcpServers:
+    - name: profilemesh-goai
+      url: http://host.docker.internal:8787/mcp
+      transport: http
+  state: Stopped

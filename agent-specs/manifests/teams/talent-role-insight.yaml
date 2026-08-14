@@ -1,0 +1,15 @@
+apiVersion: agentteams.io/v1beta1
+kind: Team
+metadata:
+  name: talent-role-insight
+spec:
+  description: 人才与角色洞察
+  workerMembers:
+    - name: talent-role-insight-lead
+      role: team_leader
+    - name: person-profile-worker
+      role: worker
+    - name: role-and-position-analysis-worker
+      role: worker
+    - name: team-role-ecology-worker
+      role: worker

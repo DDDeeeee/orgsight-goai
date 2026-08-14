@@ -1,0 +1,335 @@
+{
+  "organization_id": "huabei_operations_center_v1",
+  "display_name": "华北区域运营中心",
+  "snapshot_date": "2026-01-12",
+  "scope": "包含区域中心办公室和履约仓成员；总部职能仅作为外部汇报或协作背景，不包含总部人员。",
+  "member_count": 22,
+  "units": [
+    {
+      "unit_id": "branch_management",
+      "name": "分部管理",
+      "parent_unit_id": null,
+      "manager_person_id": "p_chen_yuan"
+    },
+    {
+      "unit_id": "sales",
+      "name": "销售",
+      "parent_unit_id": "branch_management",
+      "manager_person_id": "p_chen_yuan"
+    },
+    {
+      "unit_id": "office_administration",
+      "name": "办公室行政",
+      "parent_unit_id": "branch_management",
+      "manager_person_id": "p_chen_yuan"
+    },
+    {
+      "unit_id": "accounting",
+      "name": "会计",
+      "parent_unit_id": "branch_management",
+      "manager_person_id": "p_shen_lan"
+    },
+    {
+      "unit_id": "people_customer_supplier_quality",
+      "name": "人力、客户、供应商与质量职能",
+      "parent_unit_id": "branch_management",
+      "manager_person_id": "p_chen_yuan"
+    },
+    {
+      "unit_id": "warehouse",
+      "name": "仓库",
+      "parent_unit_id": "branch_management",
+      "manager_person_id": "p_ma_xiao"
+    }
+  ],
+  "people": [
+    {
+      "person_id": "p_chen_yuan",
+      "name": "陈远",
+      "formal_title": "区域经理",
+      "unit_id": "branch_management",
+      "formal_manager_person_id": null,
+      "functional_manager": "总部管理层",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_luo_jun",
+      "name": "罗峻",
+      "formal_title": "资深销售代表；销售运营协调员",
+      "unit_id": "sales",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee",
+      "formal_structure_note": "该岗位承担销售运营协调，不具备正式人员管理权。"
+    },
+    {
+      "person_id": "p_zhou_yichen",
+      "name": "周亦晨",
+      "formal_title": "销售代表",
+      "unit_id": "sales",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_gao_wenhai",
+      "name": "高文海",
+      "formal_title": "销售代表",
+      "unit_id": "sales",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_lin_shu",
+      "name": "林舒",
+      "formal_title": "销售代表",
+      "unit_id": "sales",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_he_ziang",
+      "name": "贺子昂",
+      "formal_title": "销售代表",
+      "unit_id": "sales",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_fang_ning",
+      "name": "方宁",
+      "formal_title": "销售代表",
+      "unit_id": "sales",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee",
+      "formal_structure_note": "近期从其他区域调入，仍在建立本地客户与协作网络。"
+    },
+    {
+      "person_id": "p_su_nian",
+      "name": "苏念",
+      "formal_title": "接待员",
+      "unit_id": "office_administration",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_xu_ming",
+      "name": "许明",
+      "formal_title": "办公室运营专员",
+      "unit_id": "office_administration",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": null,
+      "employment_type": "temporary"
+    },
+    {
+      "person_id": "p_shen_lan",
+      "name": "沈岚",
+      "formal_title": "会计主管",
+      "unit_id": "accounting",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": "总部财务",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_gu_yan",
+      "name": "顾言",
+      "formal_title": "会计",
+      "unit_id": "accounting",
+      "formal_manager_person_id": "p_shen_lan",
+      "functional_manager": "总部财务",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_wu_bo",
+      "name": "吴博",
+      "formal_title": "会计",
+      "unit_id": "accounting",
+      "formal_manager_person_id": "p_shen_lan",
+      "functional_manager": "总部财务",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_zhao_ning",
+      "name": "赵宁",
+      "formal_title": "人力资源代表",
+      "unit_id": "people_customer_supplier_quality",
+      "formal_manager_person_id": null,
+      "functional_manager": "总部人力资源",
+      "employment_type": "employee",
+      "formal_structure_note": "常驻区域中心但正式隶属总部人力资源；区域经理是本地协作方，不是其正式直属经理。"
+    },
+    {
+      "person_id": "p_tang_yue",
+      "name": "唐悦",
+      "formal_title": "客户服务代表",
+      "unit_id": "people_customer_supplier_quality",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": "总部客户服务",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_ye_lin",
+      "name": "叶琳",
+      "formal_title": "供应商关系代表",
+      "unit_id": "people_customer_supplier_quality",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": "总部供应商关系",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_cheng_fang",
+      "name": "程放",
+      "formal_title": "质量保证负责人",
+      "unit_id": "people_customer_supplier_quality",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": "总部质量保证",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_ma_xiao",
+      "name": "马骁",
+      "formal_title": "仓库领班",
+      "unit_id": "warehouse",
+      "formal_manager_person_id": "p_chen_yuan",
+      "functional_manager": "总部物流",
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_han_lei",
+      "name": "韩磊",
+      "formal_title": "仓库专员",
+      "unit_id": "warehouse",
+      "formal_manager_person_id": "p_ma_xiao",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_chen_shi",
+      "name": "陈实",
+      "formal_title": "仓库专员",
+      "unit_id": "warehouse",
+      "formal_manager_person_id": "p_ma_xiao",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_lu_qing",
+      "name": "陆青",
+      "formal_title": "仓库专员",
+      "unit_id": "warehouse",
+      "formal_manager_person_id": "p_ma_xiao",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_cheng_tao",
+      "name": "程涛",
+      "formal_title": "仓库专员",
+      "unit_id": "warehouse",
+      "formal_manager_person_id": "p_ma_xiao",
+      "functional_manager": null,
+      "employment_type": "employee"
+    },
+    {
+      "person_id": "p_li_xiao",
+      "name": "李骁",
+      "formal_title": "仓库专员",
+      "unit_id": "warehouse",
+      "formal_manager_person_id": "p_ma_xiao",
+      "functional_manager": null,
+      "employment_type": "employee"
+    }
+  ],
+  "formal_reporting_lines": [
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_luo_jun"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_zhou_yichen"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_gao_wenhai"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_lin_shu"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_he_ziang"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_fang_ning"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_su_nian"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_xu_ming"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_shen_lan"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_tang_yue"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_ye_lin"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_cheng_fang"
+    },
+    {
+      "manager_person_id": "p_chen_yuan",
+      "report_person_id": "p_ma_xiao"
+    },
+    {
+      "manager_person_id": "p_shen_lan",
+      "report_person_id": "p_gu_yan"
+    },
+    {
+      "manager_person_id": "p_shen_lan",
+      "report_person_id": "p_wu_bo"
+    },
+    {
+      "manager_person_id": "p_ma_xiao",
+      "report_person_id": "p_han_lei"
+    },
+    {
+      "manager_person_id": "p_ma_xiao",
+      "report_person_id": "p_chen_shi"
+    },
+    {
+      "manager_person_id": "p_ma_xiao",
+      "report_person_id": "p_lu_qing"
+    },
+    {
+      "manager_person_id": "p_ma_xiao",
+      "report_person_id": "p_cheng_tao"
+    },
+    {
+      "manager_person_id": "p_ma_xiao",
+      "report_person_id": "p_li_xiao"
+    }
+  ],
+  "formal_structure_notes": [
+    "赵宁作为常驻区域中心的总部人力资源职能保留，不是区域经理的直接下属。",
+    "总部职能线仅作上下文说明；总部人员不属于本组织快照范围。",
+    "此快照只记录正式架构。人物模型、实际协作关系、非正式影响力、冲突、项目和事件独立保存。"
+  ]
+}

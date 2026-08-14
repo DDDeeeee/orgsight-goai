@@ -1,0 +1,17 @@
+apiVersion: agentteams.io/v1beta1
+kind: Team
+metadata:
+  name: management-decision-simulation
+spec:
+  description: 管理决策与推演
+  workerMembers:
+    - name: management-decision-simulation-lead
+      role: team_leader
+    - name: diagnosis-synthesis-worker
+      role: worker
+    - name: intervention-planner-worker
+      role: worker
+    - name: team-simulation-worker
+      role: worker
+    - name: plan-validation-worker
+      role: worker

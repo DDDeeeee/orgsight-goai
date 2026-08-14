@@ -1,0 +1,8 @@
+<svg width="128" height="128" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(60, 65)">
+    <path transform="translate(0, 0)" d="M 10,0 H 80 V 25 a 15,15 0 0 1 0,30 V 80 H 55 a 15,15 0 0 1 -30,0 H 0 V 10 a 10,10 0 0 1 10,-10 Z" fill="#5A6474"/>
+    <path transform="translate(0, 80)" d="M 0,0 H 25 a 15,15 0 0 0 30,0 H 80 V 25 a 15,15 0 0 1 0,30 V 80 H 10 a 10,10 0 0 1 -10,-10 V 0 Z" fill="#333A49"/>
+    <path transform="translate(80, 80)" d="M 0,0 H 25 a 15,15 0 0 0 30,0 H 70 a 10,10 0 0 1 10,10 V 70 a 10,10 0 0 1 -10,10 H 0 V 55 a 15,15 0 0 0 0,-30 V 0 Z" fill="#667183"/>
+    <path transform="translate(101, -17) rotate(8, 40, 40)" d="M 0,0 H 70 a 10,10 0 0 1 10,10 V 80 H 55 a 15,15 0 0 1 -30,0 H 0 V 55 a 15,15 0 0 0 0,-30 V 0 Z" fill="#54CAF9"/>
+  </g>
+</svg>

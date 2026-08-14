@@ -1,0 +1,15 @@
+apiVersion: agentteams.io/v1beta1
+kind: Team
+metadata:
+  name: business-operations
+spec:
+  description: 业务任务与运行
+  workerMembers:
+    - name: business-operations-lead
+      role: team_leader
+    - name: project-state-worker
+      role: worker
+    - name: task-dependency-worker
+      role: worker
+    - name: operations-risk-worker
+      role: worker

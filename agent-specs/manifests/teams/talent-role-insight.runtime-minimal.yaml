@@ -1,0 +1,16 @@
+apiVersion: agentteams.io/v1beta1
+kind: Team
+metadata:
+  name: talent-role-insight
+spec:
+  description: 人才与角色洞察（当前端到端联调所需的最小成员集）
+  humanMembers:
+    - name: profilemesh-web
+      role: coordinator
+  workerMembers:
+    - name: talent-role-insight-lead
+      role: team_leader
+    - name: person-profile-worker
+      role: worker
+    - name: role-and-position-analysis-worker
+      role: worker

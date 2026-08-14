@@ -1,0 +1,15 @@
+apiVersion: agentteams.io/v1beta1
+kind: Team
+metadata:
+  name: collaboration-governance
+spec:
+  description: 协作结构与治理
+  workerMembers:
+    - name: collaboration-governance-lead
+      role: team_leader
+    - name: formal-authority-worker
+      role: worker
+    - name: collaboration-network-worker
+      role: worker
+    - name: governance-deviation-worker
+      role: worker

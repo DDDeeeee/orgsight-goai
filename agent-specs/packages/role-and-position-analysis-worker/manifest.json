@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "source": {
+    "hostname": "profilemesh-goai",
+    "os": "N/A",
+    "created_at": "2026-08-11T00:00:00+08:00",
+    "purpose": "OrgSight GOAI QwenPaw Worker package"
+  },
+  "worker": {
+    "suggested_name": "role-and-position-analysis-worker",
+    "model": "deepseek-v4-flash",
+    "runtime": "qwenpaw",
+    "apt_packages": [],
+    "pip_packages": [],
+    "npm_packages": []
+  }
+}

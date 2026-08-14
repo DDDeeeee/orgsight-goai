@@ -1,0 +1,13 @@
+apiVersion: agentteams.io/v1beta1
+kind: Worker
+metadata:
+  name: governance-deviation-worker
+spec:
+  model: deepseek-v4-flash
+  runtime: copaw # QwenPaw
+  package: packages/governance-deviation-worker.zip
+  mcpServers:
+    - name: profilemesh-goai
+      url: http://host.docker.internal:8787/mcp
+      transport: http
+  state: Stopped

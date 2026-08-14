@@ -1,0 +1,20 @@
+# macOS and Python cache files are local artifacts.
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.~*
+~$*
+
+# Internal design notes, test records, recovery notes, and competition working
+# materials are maintained locally and are not part of the public submission.
+/docs/
+/AGENTS.md
+
+# Local runtime configuration and database files must never be committed.
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db

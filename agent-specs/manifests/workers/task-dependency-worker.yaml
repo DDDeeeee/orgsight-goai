@@ -1,0 +1,9 @@
+apiVersion: agentteams.io/v1beta1
+kind: Worker
+metadata:
+  name: task-dependency-worker
+spec:
+  model: deepseek-v4-flash
+  runtime: copaw # QwenPaw
+  package: packages/task-dependency-worker.zip
+  state: Stopped

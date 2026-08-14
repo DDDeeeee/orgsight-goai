@@ -1,0 +1,9 @@
+apiVersion: agentteams.io/v1beta1
+kind: Manager
+metadata:
+  name: profilemesh-manager
+spec:
+  model: deepseek-v4-flash
+  runtime: copaw # QwenPaw
+  package: packages/profilemesh-manager.zip
+  state: Stopped

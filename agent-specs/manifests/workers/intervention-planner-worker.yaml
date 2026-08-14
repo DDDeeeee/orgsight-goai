@@ -1,0 +1,9 @@
+apiVersion: agentteams.io/v1beta1
+kind: Worker
+metadata:
+  name: intervention-planner-worker
+spec:
+  model: deepseek-v4-flash
+  runtime: copaw # QwenPaw
+  package: packages/intervention-planner-worker.zip
+  state: Stopped

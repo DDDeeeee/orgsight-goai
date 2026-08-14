@@ -1,0 +1,4 @@
+interface:
+  display_name: "角色与岗位分析"
+  short_description: "分析个人、岗位与实际角色承担之间的匹配、边界、负荷和协作影响"
+  default_prompt: "请按角色与岗位分析流程，评估给定人员与岗位或角色要求之间的匹配关系，并输出结构化结论。"

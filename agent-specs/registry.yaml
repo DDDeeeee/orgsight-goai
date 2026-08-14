@@ -1,0 +1,20 @@
+# 静态 Agent 清单；不含模型、镜像、MCP 地址、凭证或可执行部署配置。
+manager:
+  - profilemesh-manager
+teams:
+  - name: talent-role-insight
+    display_name: 人才与角色洞察
+    leader: talent-role-insight-lead
+    workers: [person-profile-worker, role-and-position-analysis-worker, team-role-ecology-worker]
+  - name: collaboration-governance
+    display_name: 协作治理
+    leader: collaboration-governance-lead
+    workers: [formal-authority-worker, collaboration-network-worker, governance-deviation-worker]
+  - name: business-operations
+    display_name: 业务运营
+    leader: business-operations-lead
+    workers: [project-state-worker, task-dependency-worker, operations-risk-worker]
+  - name: management-decision-simulation
+    display_name: 管理决策模拟
+    leader: management-decision-simulation-lead
+    workers: [diagnosis-synthesis-worker, intervention-planner-worker, team-simulation-worker, plan-validation-worker]
