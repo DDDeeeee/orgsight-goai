@@ -147,4 +147,4 @@ OrgSight 以 AgentTeams 的 Team、Task、Room 机制作为多 Agent 协同基�
 
 项目包含岗位与角色分析、人物建模、协作关系建模、团队角色生态、团队健康、协作结构诊断、项目风险、情景模拟和干预设计等领域 Skills。每个 Skill 保持独立职责、输入输出约束、参考资料与依赖数据边界，可按 Agent 职责挂载，并在相近组织管理场景中复用。后续将补充 Skill 的版本发布、评估样例、质量回归和回滚机制。
 
-本仓库公开合成演示数据、Agent 与 Team 定义、Skills、MCP 契约、数据库初始化脚本、测试样例和完整结果示例，便于复现和二次开发；后续将补充开源许可证、第三方依赖清单和版本兼容说明。如有云端部署、托管和运行保障需求，OrgSight 将优先采用阿里云云服务与官方用云 Skills 承接部署、可观测和通用工程能力；领域分析能力仍由 OrgSight 自身 Skills 与 AgentTeams 协同链路负责。
+本仓库以 [Apache-2.0](LICENSE) 协议开源，公开合成演示数据、Agent 与 Team 定义、Skills、MCP 契约、数据库初始化脚本、测试样例和完整结果示例，便于复现和二次开发。运行依赖与版本范围以 [pyproject.toml](pyproject.toml) 为准：Python 3.11+、MCP、PostgreSQL 驱动、Uvicorn 与 python-dotenv；AgentTeams 作为独立运行时仓库使用，遵循其自身许可证和依赖约束。如有云端部署、托管和运行保障需求，OrgSight 将优先采用阿里云云服务与官方用云 Skills 承接部署、可观测和通用工程能力；领域分析能力仍由 OrgSight 自身 Skills 与 AgentTeams 协同链路负责。
