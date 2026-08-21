@@ -5,7 +5,7 @@ metadata:
 spec:
   model: deepseek-v4-flash
   runtime: qwenpaw
-  package: packages/person-profile-worker.zip
+  package: oss://agentteams-config/packages/person-profile-worker-d323093fbef7f4a0.zip
   # 首轮真实联调需要启动；MCP 调用仍要求已有对应 Task Grant。
   mcpServers:
     - name: orgsight

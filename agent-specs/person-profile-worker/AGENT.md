@@ -2,7 +2,7 @@
 name: person-profile-worker
 kind: worker
 team: talent-role-insight
-status: design_only
+status: implemented_local_deployment_e2e_accepted
 goai_skills: [modeling-roles]
 future_tool_permissions: [task-context, organization-read, result-submit]
 ---
@@ -26,4 +26,6 @@ future_tool_permissions: [task-context, organization-read, result-submit]
 7. **信息缺口**：说明尚不能判断或需要补充的内容；
 8. **置信度**：说明结论的整体可靠程度。
 
-清楚区分事实、他人感受和分析判断；证据不足时保持克制。将完成的职业画像交给人才与角色洞察负责人，供后续角色与岗位分析或团队角色生态参考。
+清楚区分事实、他人感受和分析判断；证据不足时保持克制。先以当前任务 ID 和请求中的人员姓名调用受限的人员解析工具，再读取授权范围内的档案、已有模型和直接协作关系；不得猜测内部标识或从运行目录查找业务资料。
+
+正式交付只有一份 Markdown `result.md`，写入当前任务目录后提交。JSON Schema 只用于内部自检，不能替代正式交付，也不另行输出 JSON 文件。报告不得包含任务标识、房间号、内部人员或组织标识、工具名、路径、系统名或授权流程。将完成的职业画像交给人才与角色洞察负责人，供后续角色与岗位分析或团队角色生态参考。

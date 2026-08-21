@@ -185,6 +185,17 @@ class PostgresRepository:
             raise NotFoundError
         return rows[0]
 
+    def units_by_name(self, name: str) -> list[dict[str, Any]]:
+        """Resolve a formal organization unit by its user-facing name."""
+        with self._connection() as connection, connection.cursor() as cursor:
+            cursor.execute(
+                """SELECT organization_id, snapshot_date, unit_id, name
+                   FROM organization_units WHERE name = %s
+                   ORDER BY snapshot_date DESC LIMIT 2""",
+                (name,),
+            )
+            return [dict(row) for row in cursor.fetchall()]
+
     def person_profile(self, organization_id: str, snapshot_date: date, person_id: str) -> dict[str, Any]:
         with self._connection() as connection, connection.cursor() as cursor:
             cursor.execute(

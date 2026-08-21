@@ -8,23 +8,29 @@ OrgSight 面向组织管理者，解决团队扩张时组织复杂度上升引�
 
 ## 已验证能力
 
-当前完成端到端验证的是“人才与角色洞察”团队的岗位分析链路：
+“人才与角色洞察”团队的三条 Worker 链路均已完成真实端到端验证：
+
+- `person-profile-worker`：人物职业画像；
+- `role-and-position-analysis-worker`：岗位适配分析；
+- `team-role-ecology-worker`：团队角色生态分析。
+
+三者均遵循同一交付闭环：
 
 ```text
 管理页面
   -> talent-role-insight-lead
-  -> role-and-position-analysis-worker
+  -> 对应专业 Worker
   -> OrgSight MCP
   -> PostgreSQL 合成组织数据
   -> result.md
   -> 已完成案例页面
 ```
 
-岗位分析报告包含分析范围、结论摘要、关键判断、详细分析、协作影响、风险与成立条件、依据、信息缺口和置信度。
+每条链路均由 Leader 验收 Worker 写入的任务 `result.md`。Controller 只在任务状态为 `submitted` 且同目录存在真实 `result.md` 时，将案例提供给 8800 网页自动展示。人物画像、岗位适配和团队生态分别使用各自稳定的报告结构，并均包含依据、信息缺口和置信度。
 
 仓库中还包含协作治理、业务运营和管理决策模拟等团队的 Agent 与 Skills 设计骨架。这些扩展团队尚未完成端到端验证。
 
-## 测试样例：方宁销售代表岗位适配分析
+## 演示副本：方宁销售代表岗位适配分析
 
 ### 输入
 
@@ -36,7 +42,7 @@ OrgSight 面向组织管理者，解决团队扩张时组织复杂度上升引�
 
 ![方宁销售代表岗位适配分析结果](examples/fangning-sales-fit/demo_result.png)
 
-Worker 提交并由页面读取的完整结果：[查看 result.md](examples/fangning-sales-fit/result.md)。
+该目录是手工保留在仓库中的演示副本：[查看 result.md](examples/fangning-sales-fit/result.md)。网页运行时不读取 `examples/`，而是通过 Controller 的案例接口自动读取 Team 共享任务存储中的真实 `result.md`。
 
 ## 演示数据
 
@@ -139,7 +145,7 @@ http://127.0.0.1:8800
 
 ## 治理、可观测与云端演进
 
-OrgSight 以 AgentTeams 的 Team、Task、Room 机制作为多 Agent 协同基点。当前 Demo 已验证网页发起、Leader 编排、Worker 委派、受控数据读取、结果持久化和案例展示的端到端链路；对于涉及高风险组织决策的后续场景，将补充人工确认、审批、回滚和审计边界。
+OrgSight 以 AgentTeams 的 Team、Task、Room 机制作为多 Agent 协同基点。当前 Demo 已验证人才与角色洞察 Team 的人物职业画像、岗位适配和团队角色生态三条端到端链路：Leader 编排、Worker 委派、受控数据读取、`result.md` 提交、Leader 验收及网页案例展示。对于涉及高风险组织决策的后续场景，将补充人工确认、审批、回滚和审计边界。
 
 运行侧将复用 AgentTeams 已有的任务与运行状态，并建设面向 OrgSight 的可视化观测看板，聚合任务 Trace、Agent 调用链路、模型 Token 消耗、工具调用、失败原因和结果质量信号，用于问题定位、成本治理与运行审计。
 

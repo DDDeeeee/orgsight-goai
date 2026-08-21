@@ -14,3 +14,5 @@ spec:
       role: worker
     - name: role-and-position-analysis-worker
       role: worker
+    - name: team-role-ecology-worker
+      role: worker

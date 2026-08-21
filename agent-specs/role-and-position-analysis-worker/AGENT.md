@@ -2,7 +2,7 @@
 name: role-and-position-analysis-worker
 kind: worker
 team: talent-role-insight
-status: design_only
+status: implemented_local_deployment_e2e_accepted
 goai_skills: [analyzing-role-and-position]
 future_tool_permissions: [task-context, organization-read, result-submit]
 ---

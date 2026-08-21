@@ -4,6 +4,7 @@ from orgsight import mcp_server
 from orgsight.authorization import TaskGrant
 from orgsight.grant_service import TaskGrantRegistrationService
 from orgsight.mcp_server import create_http_app, create_mcp
+from orgsight.repository import NotFoundError
 from orgsight.read_service import GoaiReadService
 
 from test_read_service import FakeRepository
@@ -12,6 +13,25 @@ from test_read_service import FakeRepository
 class GrantServiceStub:
     def __init__(self):
         self.payload = None
+        self.repository = FakeRepository()
+        self.repository.units_by_name = self._units_by_name
+        self.repository.person_by_name = self._person_by_name
+
+    @staticmethod
+    def _units_by_name(name):
+        return [{
+            "organization_id": "org-1", "snapshot_date": __import__("datetime").date(2026, 1, 12),
+            "unit_id": "sales", "name": "销售",
+        }] if name == "销售" else []
+
+    @staticmethod
+    def _person_by_name(name):
+        if name == "陈远":
+            return {
+                "organization_id": "org-1", "snapshot_date": __import__("datetime").date(2026, 1, 12),
+                "person_id": "p_chen", "unit_id": "sales",
+            }
+        raise NotFoundError
 
     def register(self, registration):
         self.payload = registration
@@ -33,11 +53,11 @@ def test_mcp_schema_is_closed_for_all_registered_tools():
     mcp = create_mcp(GoaiReadService(FakeRepository()))
 
     tools = mcp._tool_manager.list_tools()
-    assert len(tools) == 17
+    assert len(tools) == 18
     for tool in tools:
         assert tool.parameters["additionalProperties"] is False
         assert tool.parameters["properties"]["task_id"]["minLength"] == 1
-        if tool.name != "resolve_authorized_person":
+        if tool.name not in {"resolve_authorized_person", "resolve_authorized_team"}:
             assert tool.parameters["properties"]["snapshot_date"]["pattern"] == "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
 
 
@@ -141,9 +161,8 @@ def test_internal_grant_route_rejects_missing_or_invalid_controller_token():
 def test_internal_grant_route_registers_only_structured_template():
     stub = GrantServiceStub()
     payload = {
-        "taskId": "task-001", "workerId": "person-profile-worker",
-        "template": "person_role_fit_team_collaboration", "organizationId": "org-1",
-        "snapshotDate": "2026-01-12", "subjectPersonId": "p_chen", "teamId": "sales",
+        "taskId": "task-001", "workerId": "role-and-position-analysis-worker",
+        "template": "person_role_fit_team_collaboration", "subjectPersonName": "陈远",
     }
     with TestClient(create_http_app(GoaiReadService(FakeRepository()), stub), base_url="http://host.docker.internal:8787") as client:
         response = client.post("/internal/task-grants", json=payload, headers={"authorization": "Bearer leader-token"})
@@ -151,6 +170,59 @@ def test_internal_grant_route_registers_only_structured_template():
     assert response.json()["status"] == "registered"
     assert response.json()["allowedPersonCount"] == 2
     assert stub.payload.task_id == "task-001"
+    assert stub.payload.subject_person_id == "p_chen"
+    assert stub.payload.team_id == "sales"
+
+
+def test_internal_grant_route_resolves_team_name_server_side():
+    stub = GrantServiceStub()
+    payload = {
+        "taskId": "ecology-001", "workerId": "team-role-ecology-worker",
+        "template": "team_role_ecology", "scopeTeamName": "销售",
+    }
+    with TestClient(create_http_app(GoaiReadService(FakeRepository()), stub), base_url="http://host.docker.internal:8787") as client:
+        response = client.post("/internal/task-grants", json=payload, headers={"authorization": "Bearer leader-token"})
+    assert response.status_code == 201
+    assert stub.payload.team_id == "sales"
+
+
+def test_internal_grant_route_resolves_person_name_server_side_for_profile_template():
+    stub = GrantServiceStub()
+    payload = {
+        "taskId": "profile-001", "workerId": "person-profile-worker",
+        "template": "person_professional_profile", "subjectPersonName": "陈远",
+    }
+    with TestClient(create_http_app(GoaiReadService(FakeRepository()), stub), base_url="http://host.docker.internal:8787") as client:
+        response = client.post("/internal/task-grants", json=payload, headers={"authorization": "Bearer leader-token"})
+
+    assert response.status_code == 201
+    assert stub.payload.subject_person_id == "p_chen"
+    assert stub.payload.team_id is None
+
+
+def test_internal_grant_route_rejects_invalid_template_selector_combinations():
+    invalid_payloads = [
+        {"template": "person_professional_profile", "scopeTeamName": "销售"},
+        {"template": "person_professional_profile"},
+        {"template": "person_role_fit_team_collaboration", "subjectPersonName": "陈远", "scopeTeamName": "销售"},
+        {"template": "team_role_ecology", "subjectPersonName": "陈远"},
+        {"template": "team_role_ecology"},
+        {"template": "team_role_ecology", "subjectPersonName": "陈远", "scopeTeamName": "销售"},
+        {"template": "team_role_ecology", "scopeTeamName": "销售", "teamId": "sales"},
+        {"template": "team_role_ecology", "scopeTeamName": "销售", "unrelatedSelector": "销售"},
+    ]
+
+    for index, payload in enumerate(invalid_payloads):
+        stub = GrantServiceStub()
+        complete_payload = {
+            "taskId": f"invalid-{index}", "workerId": "team-role-ecology-worker", **payload,
+        }
+        with TestClient(create_http_app(GoaiReadService(FakeRepository()), stub), base_url="http://host.docker.internal:8787") as client:
+            response = client.post("/internal/task-grants", json=complete_payload, headers={"authorization": "Bearer leader-token"})
+
+        assert response.status_code == 400
+        assert response.json()["status"] == "rejected"
+        assert stub.payload is None
 
 
 def test_internal_grant_route_rejects_worker_identity():

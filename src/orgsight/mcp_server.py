@@ -15,7 +15,7 @@ from pydantic import Field
 from dotenv import load_dotenv
 
 from .read_service import GoaiReadService
-from .repository import PostgresRepository
+from .repository import NotFoundError, PostgresRepository
 from .grant_service import GrantRegistration, TaskGrantRegistrationService, GrantRegistrationError
 
 
@@ -70,7 +70,7 @@ def create_mcp(service: GoaiReadService | None = None) -> FastMCP:
         instructions=(
             "OrgSight GOAI 的任务授权只读工具。每次调用必须带 task_id、"
             "organization_id 和 snapshot_date；服务端从 Bearer 凭证识别 Worker。"
-            "在需要人员上下文时，先使用 resolve_authorized_person。"
+            "在需要人员或团队上下文时，先使用对应的受限解析工具。"
         ),
         host=host,
         port=port,
@@ -97,6 +97,12 @@ def create_mcp(service: GoaiReadService | None = None) -> FastMCP:
     def resolve_authorized_person(task_id: NonEmptyText, person_name: NonEmptyText) -> dict[str, Any]:
         return read_service.resolve_authorized_person(
             bearer_token=_bearer_token.get(), task_id=task_id, person_name=person_name,
+        )
+
+    @mcp.tool(description="在当前 Task 的授权范围内按名称解析唯一正式团队，并返回后续读取所需的组织、快照与团队标识。必须先调用此工具，禁止猜测标识。")
+    def resolve_authorized_team(task_id: NonEmptyText, team_name: NonEmptyText) -> dict[str, Any]:
+        return read_service.resolve_authorized_team(
+            bearer_token=_bearer_token.get(), task_id=task_id, team_name=team_name,
         )
 
     @mcp.tool(description="读取组织、岗位、成员与正式汇报关系。")
@@ -141,10 +147,11 @@ def create_mcp(service: GoaiReadService | None = None) -> FastMCP:
 
     @mcp.tool(description="读取任务已授权正式团队的内部和跨团队协作关系。")
     def read_team_collaboration_relations(task_id: NonEmptyText, organization_id: NonEmptyText, snapshot_date: SnapshotDate,
-                                          team_id: NonEmptyText, relation_scope: Literal["internal", "cross_team", "all"] = "all") -> dict[str, Any]:
+                                          team_id: NonEmptyText, relation_scope: Literal["internal", "cross_team", "all"] = "all",
+                                          include_descendant_units: bool = False) -> dict[str, Any]:
         return read_service.read_team_collaboration_relations(
             **common(task_id, organization_id, snapshot_date), team_id=team_id,
-            relation_scope=relation_scope,
+            relation_scope=relation_scope, include_descendant_units=include_descendant_units,
         )
 
     @mcp.tool(description="读取已验收团队角色生态、健康与协作结构结果的汇总投影。")
@@ -250,19 +257,55 @@ def create_http_app(service: GoaiReadService | None = None,
                 if not isinstance(payload, dict):
                     raise GrantRegistrationError("请求体必须是 JSON 对象")
                 registration.authorize_delegate(token)
+                allowed_payload_fields = {
+                    "taskId", "workerId", "template", "subjectPersonName", "scopeTeamName", "taskObjective",
+                }
+                unknown_fields = set(payload).difference(allowed_payload_fields)
+                if unknown_fields:
+                    raise GrantRegistrationError(
+                        "授权请求不接受未定义字段 " + "、".join(sorted(unknown_fields))
+                    )
+                template = payload.get("template")
                 subject_name = payload.get("subjectPersonName")
-                if isinstance(subject_name, str) and subject_name.strip():
+                team_name = payload.get("scopeTeamName")
+                person_templates = {
+                    "person_professional_profile",
+                    "person_role_fit_team_collaboration",
+                }
+                if template in person_templates:
+                    if "scopeTeamName" in payload or not isinstance(subject_name, str) or not subject_name.strip():
+                        raise GrantRegistrationError("人物画像和岗位适配授权只接受非空 subjectPersonName，不接受 scopeTeamName")
                     try:
                         subject = registration.repository.person_by_name(subject_name.strip())
                     except NotFoundError as exc:
                         raise GrantRegistrationError("未找到唯一匹配的人员") from exc
-                    payload = {
+                    resolved_scope = {
                         **payload,
                         "organizationId": subject["organization_id"],
                         "snapshotDate": subject["snapshot_date"].isoformat(),
                         "subjectPersonId": subject["person_id"],
-                        "teamId": subject["unit_id"],
                     }
+                    if template == "person_role_fit_team_collaboration":
+                        resolved_scope["teamId"] = subject["unit_id"]
+                    payload = resolved_scope
+                elif template == "team_role_ecology":
+                    if "subjectPersonName" in payload or not isinstance(team_name, str) or not team_name.strip():
+                        raise GrantRegistrationError("团队生态授权只接受非空 scopeTeamName，不接受 subjectPersonName")
+                    try:
+                        units = registration.repository.units_by_name(team_name.strip())
+                    except NotFoundError as exc:
+                        raise GrantRegistrationError("未找到唯一匹配的正式团队") from exc
+                    if len(units) != 1:
+                        raise GrantRegistrationError("未找到唯一匹配的正式团队")
+                    team = units[0]
+                    payload = {
+                        **payload,
+                        "organizationId": team["organization_id"],
+                        "snapshotDate": team["snapshot_date"].isoformat(),
+                        "teamId": team["unit_id"],
+                    }
+                else:
+                    raise GrantRegistrationError("不支持的授权模板")
                 grant = registration.register(GrantRegistration.from_payload(payload))
                 response = {"status": "registered", "taskId": grant.task_id,
                             "allowedPersonCount": len(grant.allowed_person_ids)}
@@ -273,6 +316,11 @@ def create_http_app(service: GoaiReadService | None = None,
             except (ValueError, json.JSONDecodeError) as exc:
                 response = {"status": "rejected", "error": str(exc)}
                 status_code = 400
+            except Exception:
+                # Do not expose database or runtime internals to the Leader.
+                # Registration failures must remain a safe, actionable response.
+                response = {"status": "rejected", "error": "授权登记服务暂不可用"}
+                status_code = 503
             raw = json.dumps(response, ensure_ascii=False).encode("utf-8")
             await send({"type": "http.response.start", "status": status_code,
                         "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(raw)).encode())]})

@@ -5,5 +5,5 @@ metadata:
 spec:
   model: deepseek-v4-flash
   runtime: qwenpaw
-  package: packages/talent-role-insight-lead.zip
+  package: oss://agentteams-config/packages/talent-role-insight-lead-ca0ac74e2ab9b7b1.zip
   state: Running

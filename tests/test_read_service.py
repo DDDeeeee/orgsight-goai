@@ -81,6 +81,14 @@ class OrganizationRepository(FakeRepository):
     def person_model(self, organization_id, snapshot_date, person_id, model_version):
         return {"model_document_id": "model-chen", "model_version": 1, "model_status": "active", "model_json": {"person_id": person_id}, "relative_path": "data/model-documents/person-chen.md"}
 
+    def units_by_name(self, name):
+        return [{"organization_id": "org-1", "snapshot_date": date(2026, 1, 12), "unit_id": "sales", "name": "销售"}] if name == "销售" else []
+
+    def person_by_name(self, name):
+        if name == "陈远":
+            return {"organization_id": "org-1", "snapshot_date": date(2026, 1, 12), "person_id": "p_chen", "unit_id": "sales"}
+        raise NotFoundError
+
     def model_markdown(self, relative_path):
         return "# 陈远\n\n模型正文\n"
 
@@ -264,10 +272,30 @@ def test_team_relationship_response_does_not_expose_excluded_edge_count():
     assert result["data"]["cross_team_relations"] == []
 
 
+def test_team_relationships_include_descendants_only_when_requested():
+    repository = OrganizationRepository()
+    repository.relationships = lambda organization_id, snapshot_date: (
+        {"relationship_snapshot_id": "rel-1", "status": "active"},
+        [
+            {"member_a_person_id": "p_chen", "member_b_person_id": "p_east", "relationship_type": "协作", "valence": "positive", "salience": 3, "summary": "跨子单元", "risk": "无"},
+        ],
+    )
+    service = GoaiReadService(repository)
+
+    direct_only = service.read_team_collaboration_relations(**request(), team_id="sales")
+    with_descendants = service.read_team_collaboration_relations(
+        **request(), team_id="sales", include_descendant_units=True,
+    )
+
+    assert direct_only["data"]["member_ids"] == ["p_chen", "p_luo"]
+    assert with_descendants["data"]["member_ids"] == ["p_chen", "p_east", "p_luo"]
+    assert len(with_descendants["data"]["internal_relations"]) == 1
+
+
 def test_role_fit_template_expands_team_scope_and_all_required_read_tools():
     repository = GrantRegistrationRepository()
     grant = TaskGrantRegistrationService(repository).register(GrantRegistration.from_payload({
-        "taskId": "role-fit-001", "workerId": "person-profile-worker",
+        "taskId": "role-fit-001", "workerId": "role-and-position-analysis-worker",
         "template": "person_role_fit_team_collaboration", "organizationId": "org-1",
         "snapshotDate": "2026-01-12", "subjectPersonId": "p_chen", "teamId": "sales",
     }))
@@ -282,10 +310,79 @@ def test_role_fit_template_expands_team_scope_and_all_required_read_tools():
     }
 
 
+def test_professional_profile_template_limits_reads_to_the_subject():
+    repository = GrantRegistrationRepository()
+    grant = TaskGrantRegistrationService(repository).register(GrantRegistration.from_payload({
+        "taskId": "profile-001", "workerId": "person-profile-worker",
+        "template": "person_professional_profile", "organizationId": "org-1",
+        "snapshotDate": "2026-01-12", "subjectPersonId": "p_chen",
+    }))
+
+    assert grant.allowed_person_ids == {"p_chen"}
+    assert grant.allowed_unit_ids == {"sales"}
+    assert grant.allowed_tools == {
+        "resolve_authorized_person", "read_person_profile", "read_person_model",
+        "read_person_collaboration_relations",
+    }
+
+
+def test_team_role_ecology_template_expands_only_target_team_and_descendants():
+    repository = GrantRegistrationRepository()
+    grant = TaskGrantRegistrationService(repository).register(GrantRegistration.from_payload({
+        "taskId": "ecology-001", "workerId": "team-role-ecology-worker",
+        "template": "team_role_ecology", "organizationId": "org-1",
+        "snapshotDate": "2026-01-12", "teamId": "sales",
+    }))
+
+    assert grant.allowed_person_ids == {"p_chen", "p_luo", "p_east"}
+    assert grant.allowed_unit_ids == {"sales", "sales-east"}
+    assert grant.allowed_tools == {
+        "resolve_authorized_team", "read_organization_structure", "read_person_profile",
+        "read_person_model", "read_team_members", "read_team_collaboration_relations",
+    }
+
+
+def test_templates_reject_wrong_worker_or_missing_target():
+    repository = GrantRegistrationRepository()
+    service = TaskGrantRegistrationService(repository)
+    import pytest
+
+    with pytest.raises(ValueError, match="不适用于"):
+        service.register(GrantRegistration.from_payload({
+            "taskId": "wrong-worker", "workerId": "person-profile-worker",
+            "template": "team_role_ecology", "organizationId": "org-1",
+            "snapshotDate": "2026-01-12", "teamId": "sales",
+        }))
+    with pytest.raises(ValueError, match="需要 teamId"):
+        service.register(GrantRegistration.from_payload({
+            "taskId": "missing-team", "workerId": "team-role-ecology-worker",
+            "template": "team_role_ecology", "organizationId": "org-1",
+            "snapshotDate": "2026-01-12",
+        }))
+
+
+def test_templates_reject_irrelevant_internal_target_identifiers():
+    import pytest
+
+    base = {
+        "taskId": "invalid-target", "organizationId": "org-1", "snapshotDate": "2026-01-12",
+    }
+    with pytest.raises(ValueError, match="人物画像授权只接受"):
+        GrantRegistration.from_payload({
+            **base, "workerId": "person-profile-worker", "template": "person_professional_profile",
+            "subjectPersonId": "p_chen", "teamId": "sales",
+        })
+    with pytest.raises(ValueError, match="团队生态授权只接受"):
+        GrantRegistration.from_payload({
+            **base, "workerId": "team-role-ecology-worker", "template": "team_role_ecology",
+            "subjectPersonId": "p_chen", "teamId": "sales",
+        })
+
+
 def test_role_fit_template_rejects_subject_outside_team_scope():
     repository = GrantRegistrationRepository()
     registration = GrantRegistration.from_payload({
-        "taskId": "role-fit-001", "workerId": "person-profile-worker",
+        "taskId": "role-fit-001", "workerId": "role-and-position-analysis-worker",
         "template": "person_role_fit_team_collaboration", "organizationId": "org-1",
         "snapshotDate": "2026-01-12", "subjectPersonId": "p_unknown", "teamId": "sales",
     })

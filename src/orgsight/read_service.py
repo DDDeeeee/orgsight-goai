@@ -54,37 +54,6 @@ class GoaiReadService:
             # Do not let one authenticated Worker discover another Worker's
             # Task IDs by comparing not_found and access_denied responses.
             return None, response("not_found", missing_information=["Task 授权不存在"])
-        if not grant and worker_id == "person-profile-worker" and isinstance(self.repository, PostgresRepository):
-            # Competition Demo: AgentTeams already selects the configured
-            # Worker.  Do not make delegation depend on a second, custom
-            # authorization-registration service.  An authenticated Worker
-            # receives the full fixed synthetic snapshot, read-only.
-            try:
-                organization = self.repository.organization(organization_id, parsed_date)
-                people = self.repository.people(organization_id, parsed_date)
-                units = self.repository.units(organization_id, parsed_date)
-            except NotFoundError:
-                return None, response("not_found")
-            grant = TaskGrant(
-                task_id=task_id,
-                worker_id=worker_id,
-                organization_id=organization["organization_id"],
-                snapshot_date=parsed_date,
-                task_objective="",
-                allowed_tools=frozenset({
-                    "read_organization_overview", "read_organization_structure", "read_person_profile",
-                    "read_person_model", "read_person_collaboration_relations", "read_team_members",
-                    "read_team_collaboration_relations", "read_team_model", "read_team_role_ecology",
-                    "read_team_health_assessment", "read_collaboration_structure_diagnosis", "read_project",
-                    "read_project_events", "read_project_state", "read_project_tasks",
-                    "read_project_collaboration_risk",
-                }),
-                allowed_person_ids=frozenset(person["person_id"] for person in people),
-                allowed_unit_ids=frozenset({organization["organization_id"], *(unit["unit_id"] for unit in units)}),
-                allowed_project_ids=frozenset(),
-                status="active",
-                expires_at=None,
-            )
         if not grant:
             return None, response("not_found", missing_information=["Task 授权不存在"])
         try:
@@ -132,6 +101,37 @@ class GoaiReadService:
             "team_id": person["unit_id"],
             "formal_title": person["formal_title"],
         }
+        return response("ok", data, [{"ref_type": "task_grant", "ref_id": task_id,
+                                       "ref_version": str(grant.snapshot_date),
+                                       "content_sha256": canonical_hash(data)}])
+
+    def resolve_authorized_team(self, *, bearer_token: str | None, task_id: str,
+                                team_name: str) -> dict[str, Any]:
+        """Resolve one formal team only when it is already inside this Task Grant."""
+        if not task_id or not team_name or not team_name.strip():
+            return response("input_invalid", missing_information=["task_id 和 team_name 必须有效"])
+        if not bearer_token:
+            return response("access_denied", missing_information=["缺少 Worker 凭证"])
+        worker_id = self.repository.resolve_worker(bearer_token)
+        if not worker_id:
+            return response("access_denied", missing_information=["无法鉴别调用 Worker"])
+        grant = self.repository.get_grant(task_id)
+        if not grant or grant.worker_id != worker_id:
+            return response("not_found", missing_information=["Task 授权不存在"])
+        try:
+            grant.assert_request("resolve_authorized_team", grant.organization_id, grant.snapshot_date)
+            units = self.repository.units(grant.organization_id, grant.snapshot_date)
+        except AuthorizationError as error:
+            return response("access_denied", missing_information=[str(error)])
+        except NotFoundError:
+            return response("not_found")
+        matches = [unit for unit in units if unit["name"] == team_name.strip()
+                   and unit["unit_id"] in grant.allowed_unit_ids]
+        if len(matches) != 1:
+            return response("not_found", missing_information=["授权范围内未找到唯一匹配的正式团队"])
+        team = matches[0]
+        data = {"organization_id": grant.organization_id, "snapshot_date": str(grant.snapshot_date),
+                "team_id": team["unit_id"], "team_name": team["name"]}
         return response("ok", data, [{"ref_type": "task_grant", "ref_id": task_id,
                                        "ref_version": str(grant.snapshot_date),
                                        "content_sha256": canonical_hash(data)}])
@@ -360,7 +360,7 @@ class GoaiReadService:
         selected = [edge for edge in edges if person_id in (edge["member_a_person_id"], edge["member_b_person_id"])]
         if requested_counterparties:
             selected = [edge for edge in selected if ({edge["member_a_person_id"], edge["member_b_person_id"]} - {person_id}).issubset(requested_counterparties)]
-        else:
+        elif len(grant.allowed_person_ids) > 1:
             selected = [edge for edge in selected if ({edge["member_a_person_id"], edge["member_b_person_id"]} - {person_id}).issubset(grant.allowed_person_ids)]
         data = {"relationship_snapshot": {"relationship_snapshot_id": snapshot["relationship_snapshot_id"], "status": snapshot["status"]},
                 "person_id": person_id, "relations": [self._edge(edge) for edge in selected]}
@@ -393,7 +393,8 @@ class GoaiReadService:
         return response("ok", data, [{"ref_type": "organization_unit", "ref_id": team_id,
                                         "ref_version": str(grant.snapshot_date), "content_sha256": canonical_hash(data)}])
 
-    def read_team_collaboration_relations(self, *, team_id: str, relation_scope: str = "all", **kwargs: str) -> dict[str, Any]:
+    def read_team_collaboration_relations(self, *, team_id: str, relation_scope: str = "all",
+                                          include_descendant_units: bool = False, **kwargs: str) -> dict[str, Any]:
         grant, denied = self.authorize(tool_name="read_team_collaboration_relations", **kwargs)
         if denied:
             return denied
@@ -411,7 +412,10 @@ class GoaiReadService:
             return response("not_found")
         if team_id not in {unit["unit_id"] for unit in units}:
             return response("input_invalid", missing_information=["team_id 不是当前快照的正式 unit_id"])
-        member_ids = {person["person_id"] for person in people if person["unit_id"] == team_id}
+        team_units = self._descendants(units, team_id) if include_descendant_units else {team_id}
+        if not team_units.issubset(grant.allowed_unit_ids):
+            return response("access_denied", missing_information=["Task 未授权该团队范围内的全部组织单元"])
+        member_ids = {person["person_id"] for person in people if person["unit_id"] in team_units}
         if not member_ids.issubset(grant.allowed_person_ids):
             return response("access_denied", missing_information=["Task 未授权该团队范围内的全部成员"])
         internal = [edge for edge in edges if edge["member_a_person_id"] in member_ids and edge["member_b_person_id"] in member_ids]

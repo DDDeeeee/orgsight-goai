@@ -18,7 +18,9 @@ from orgsight.authorization import token_sha256
 
 ALLOWED_WORKER_IDS = (
     "talent-role-insight-lead",
+    "person-profile-worker",
     "role-and-position-analysis-worker",
+    "team-role-ecology-worker",
 )
 
 
@@ -28,7 +30,7 @@ def main() -> int:
         "--worker-id",
         default="talent-role-insight-lead",
         choices=ALLOWED_WORKER_IDS,
-        help="仅允许登记当前最小演示链路中的已部署 AgentTeams 身份",
+        help="仅允许登记当前已部署 OrgSight AgentTeams 身份",
     )
     args = parser.parse_args()
     token = sys.stdin.read().strip()
